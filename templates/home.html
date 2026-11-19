@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+
+{% block title %}My notes · NoteNest{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div>
+        <span class="eyebrow">Your personal space</span>
+        <h1>Keep your thoughts<br>close at hand.</h1>
+        <p>Capture an idea, save a detail, and find it whenever you need it.</p>
+    </div>
+    <a class="btn" href="{% url 'add_note' %}">＋ &nbsp; Create a note</a>
+</section>
+
+<form class="note-filters" method="get" action="{% url 'home' %}">
+    <div class="filter-heading">
+        <div>
+            <span class="eyebrow">Your library</span>
+            <h2>Find a note</h2>
+        </div>
+        <p>Search, filter, or sort your notes.</p>
+    </div>
+    <div class="filter-primary-row">
+        <div class="search-box filter-search">
+            <label for="note-search">Search notes</label>
+            <div class="search-input-wrap">
+                <input id="note-search" type="search" name="q" value="{{ search_query }}" placeholder="Titles, content, or tags…">
+                {% if search_query %}<a class="search-clear" href="{% url 'home' %}" aria-label="Clear search">×</a>{% endif %}
+            </div>
+        </div>
+        <fieldset class="pinned-filter-field">
+            <legend>Pinned status</legend>
+            <div class="pinned-filter-options">
+                <label class="pinned-filter-option">
+                    <input type="radio" name="pinned" value="" {% if not pinned_filter %}checked{% endif %}>
+                    <span>All</span>
+                </label>
+                <label class="pinned-filter-option">
+                    <input type="radio" name="pinned" value="pinned" {% if pinned_filter == 'pinned' %}checked{% endif %}>
+                    <span>★ Pinned</span>
+                </label>
+                <label class="pinned-filter-option">
+                    <input type="radio" name="pinned" value="unpinned" {% if pinned_filter == 'unpinned' %}checked{% endif %}>
+                    <span>Unpinned</span>
+                </label>
+            </div>
+        </fieldset>
+        <fieldset class="date-sort-field">
+            <legend>Date &amp; order</legend>
+            <div class="date-sort-options">
+                <label class="date-sort-option">
+                    <input type="radio" name="sort" value="default" {% if sort_order == 'default' %}checked{% endif %}>
+                    <span>Pinned first</span>
+                </label>
+                <label class="date-sort-option">
+                    <input type="radio" name="sort" value="recent" {% if sort_order == 'recent' %}checked{% endif %}>
+                    <span>Newest</span>
+                </label>
+                <label class="date-sort-option">
+                    <input type="radio" name="sort" value="oldest" {% if sort_order == 'oldest' %}checked{% endif %}>
+                    <span>Oldest</span>
+                </label>
+                <label class="date-sort-option">
+                    <input type="radio" name="sort" value="title" {% if sort_order == 'title' %}checked{% endif %}>
+                    <span>Title A–Z</span>
+                </label>
+            </div>
+        </fieldset>
+    </div>
+    {% if available_tags %}
+        <fieldset class="filter-field tag-filter-field">
+            <legend>Filter by tag <span>Select any that apply</span></legend>
+            <div class="tag-filter-options">
+                {% for tag in available_tags %}
+                    <label class="tag-filter-option">
+                        <input type="checkbox" name="tags" value="{{ tag.pk }}" {% if tag.pk in selected_tag_ids %}checked{% endif %}>
+                        <span>{{ tag.name }}</span>
+                    </label>
+                {% endfor %}
+            </div>
+        </fieldset>
+    {% endif %}
+    <div class="filter-actions">
+        <button class="btn" type="submit">Show notes</button>
+        {% if search_query or pinned_filter or selected_tag_ids or sort_order != 'default' %}
+            <a class="filter-reset" href="{% url 'home' %}">Reset filters</a>
+        {% endif %}
+    </div>
+</form>
+
+<div class="section-label">{% if search_query %}Search results{% else %}Your notes{% endif %} · {{ page_obj.paginator.count }}</div>
+{% if notes %}
+    <section class="notes-grid" aria-label="Your notes">
+        {% for note in notes %}
+            <a class="note-card" href="{% url 'note_detail' note.pk %}">
+                <div class="note-top"><h2>{{ note.title }}</h2>{% if note.is_pinned %}<span class="pin">★ Pinned</span>{% endif %}</div>
+                <div class="note-preview">{{ note.content }}</div>
+                {% if note.tags.all %}<div class="tag-list">{% for tag in note.tags.all %}<span class="tag">{{ tag.name }}</span>{% endfor %}</div>{% endif %}
+                <div class="note-footer"><span>Updated {{ note.updated_at|date:"M j, Y" }}</span><span>Open note →</span></div>
+            </a>
+        {% endfor %}
+    </section>
+    {% if page_obj.paginator.num_pages > 1 %}
+        <nav class="pagination" aria-label="Notes pages">
+            {% if page_obj.has_previous %}
+                <a class="btn btn-secondary" href="?{% if pagination_query %}{{ pagination_query }}&amp;{% endif %}page={{ page_obj.previous_page_number }}">Previous</a>
+            {% else %}
+                <span class="btn btn-secondary pagination-disabled" aria-disabled="true">Previous</span>
+            {% endif %}
+            <span class="pagination-status">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+            {% if page_obj.has_next %}
+                <a class="btn btn-secondary" href="?{% if pagination_query %}{{ pagination_query }}&amp;{% endif %}page={{ page_obj.next_page_number }}">Next</a>
+            {% else %}
+                <span class="btn btn-secondary pagination-disabled" aria-disabled="true">Next</span>
+            {% endif %}
+        </nav>
+    {% endif %}
+{% else %}
+    <section class="empty-state">
+        <div class="empty-icon">✎</div>
+        {% if search_query or has_active_filters %}
+            <h2>No notes found</h2><p>Try a different search, or clear it to see all your notes.</p>
+            <a class="btn btn-secondary" href="{% url 'home' %}">Clear filters</a>
+        {% else %}
+            <h2>Your notebook is ready</h2><p>Start with a thought, a reminder, or anything you want to remember.</p>
+            <a class="btn" href="{% url 'add_note' %}">Create your first note</a>
+        {% endif %}
+    </section>
+{% endif %}
+{% endblock %}

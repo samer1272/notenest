@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ note.title }} · NoteNest{% endblock %}
+
+{% block content %}
+<article class="panel detail-panel">
+    <a class="text-link detail-back-link" href="{% url 'home' %}">← Back to notes</a>
+    <div class="detail-title">
+        <div>
+            <div class="eyebrow">{% if note.is_pinned %}★ Pinned note{% else %}Your note{% endif %}</div>
+            <h1 class="detail-heading">{{ note.title }}</h1>
+            <div class="detail-meta">Updated {{ note.updated_at|date:"F j, Y · g:i a" }}</div>
+        </div>
+        <div class="detail-actions">
+            <a class="btn btn-secondary" href="{% url 'edit_note' note.pk %}">Edit</a>
+            <a class="btn btn-secondary" href="{% url 'export_pdf' note.pk %}">Export PDF</a>
+            <a class="btn btn-secondary btn-delete-link" href="{% url 'delete_note' note.pk %}">Delete</a>
+        </div>
+    </div>
+    {% if note.tags.all %}<div class="tag-list">{% for tag in note.tags.all %}<span class="tag">{{ tag.name }}</span>{% endfor %}</div>{% endif %}
+    <div class="detail-content">{{ note.content }}</div>
+    <div class="detail-meta">Created {{ note.created_at|date:"F j, Y · g:i a" }}</div>
+</article>
+{% endblock %}

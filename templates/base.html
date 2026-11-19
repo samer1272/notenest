@@ -1,0 +1,43 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f7f6f2">
+    <title>{% block title %}NoteNest{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}?v=4">
+</head>
+<body>
+    <header class="site-header">
+        <div class="nav-wrap">
+            <a class="brand" href="{% url 'home' %}"><span class="brand-mark">N</span> NoteNest</a>
+            <nav class="nav-links" aria-label="Main navigation">
+                <a href="{% url 'home' %}">My notes</a>
+                <a href="{% url 'about' %}">About</a>
+            </nav>
+            <div class="nav-actions">
+                {% if user.is_authenticated %}
+                    <span class="user-greeting">Hi, {{ user.first_name|default:user.username }}</span>
+                    <a class="btn btn-secondary" href="{% url 'profile' %}">Profile</a>
+                    <a class="btn btn-secondary" href="{% url 'logout_confirm' %}">Log out</a>
+                {% else %}
+                    <a class="btn btn-secondary" href="{% url 'login' %}">Log in</a>
+                    <a class="btn" href="{% url 'sign_up' %}">Get started</a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+    <main class="page-wrap">
+        {% if messages %}
+            <div class="flash-messages" role="status" aria-live="polite">
+                {% for message in messages %}
+                    <p class="flash-message flash-{{ message.tags }}">{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+        {% block content %}{% endblock %}
+    </main>
+    <footer class="site-footer">A little space for everything on your mind · NoteNest</footer>
+</body>
+</html>

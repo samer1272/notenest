@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block title %}About · NoteNest{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <h1>About NoteNest</h1>
+    <p>NoteNest helps you collect thoughts, plans, and details you want to remember. Keep your notes organized, searchable, and yours.</p>
+    <a class="btn" href="{% url 'home' %}">Back to my notes</a>
+</section>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete note · NoteNest{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <h1>Delete this note?</h1>
+    <p class="danger-copy">“{{ note.title }}” will be permanently removed. This can’t be undone.</p>
+    <form method="post" class="form-actions">
+        {% csrf_token %}
+        <button class="btn btn-danger" type="submit">Yes, delete note</button>
+        <a class="btn btn-secondary" href="{% url 'note_detail' note.pk %}">Keep note</a>
+    </form>
+</section>
+{% endblock %}

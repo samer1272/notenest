@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}Your profile · NoteNest{% endblock %}
+
+{% block content %}
+<section>
+    <h1>Your profile</h1>
+    <div class="panel profile-panel">
+        <div class="profile-summary">
+            {% if profile_image_url %}
+                <img class="profile-avatar" src="{{ profile_image_url }}" alt="{{ profile.user.username }}'s profile picture">
+            {% else %}
+                <div class="profile-avatar profile-avatar-placeholder" aria-hidden="true">{{ profile.user.username|first|upper }}</div>
+            {% endif %}
+            <div>
+                <h2>{{ profile.user.username }}</h2>
+                <p class="profile-bio">{{ profile.bio|default:"No bio added yet." }}</p>
+            </div>
+        </div>
+        <h2>Edit profile</h2>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Save changes</button>
+        </form>
+    </div>
+</section>
+{% endblock %}

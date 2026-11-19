@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Create account · NoteNest{% endblock %}
+
+{% block content %}
+<section class="auth-box">
+    <h1>Create account</h1>
+    <form class="simple-auth-form" method="post" action="{% url 'sign_up' %}">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ next }}">
+        {{ form.as_p }}
+        <button type="submit">Create account</button>
+    </form>
+    <p class="simple-auth-link">Already have an account? <a href="{% url 'login' %}{% if next %}?next={{ next|urlencode }}{% endif %}">Sign in</a></p>
+</section>
+{% endblock %}
